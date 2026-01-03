@@ -1,0 +1,458 @@
+<UserControl
+    x:Class="YoutubeDownloader.Views.Dialogs.VideoProcessingView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:YoutubeDownloader.Converters"
+    xmlns:dialogs="clr-namespace:YoutubeDownloader.ViewModels.Dialogs"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    Width="600"
+    x:DataType="dialogs:VideoProcessingViewModel">
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+        <TextBlock
+            Grid.Row="0"
+            Margin="16"
+            FontSize="19"
+            FontWeight="Light"
+            Text="Video Processing Tools" />
+
+        <Border
+            Grid.Row="1"
+            Padding="0,8"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,1">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <!-- Video File Selection Section -->
+                    <Border
+                        Margin="16,4"
+                        Padding="12"
+                        Background="{DynamicResource MaterialCardBackgroundBrush}"
+                        CornerRadius="4">
+                        <StackPanel Orientation="Vertical" Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <materialIcons:MaterialIcon
+                                    Width="20"
+                                    Height="20"
+                                    Kind="Video" />
+                                <TextBlock
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Text="Select Video File" />
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                Text="Choose a video file to process. Supported formats: MP4, WebM, MKV, AVI, MOV, FLV"
+                                TextWrapping="Wrap" />
+                            <DockPanel LastChildFill="True">
+                                <Button
+                                    Margin="8,0,0,0"
+                                    DockPanel.Dock="Right"
+                                    Command="{Binding SelectVideoFileCommand}"
+                                    Content="Browse"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <TextBox
+                                    IsReadOnly="True"
+                                    Text="{Binding VideoFilePath}"
+                                    Watermark="No video file selected..." />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Extract Audio Section -->
+                    <Border
+                        Margin="16,4"
+                        Padding="12"
+                        Background="{DynamicResource MaterialCardBackgroundBrush}"
+                        CornerRadius="4">
+                        <StackPanel Orientation="Vertical" Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <materialIcons:MaterialIcon
+                                    Width="20"
+                                    Height="20"
+                                    Kind="MusicNote" />
+                                <TextBlock
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Text="Extract Audio" />
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                Text="Extract audio track from video and save as MP3 file."
+                                TextWrapping="Wrap" />
+                            <Button
+                                HorizontalAlignment="Left"
+                                Command="{Binding ExtractAudioCommand}"
+                                Content="Extract Audio to MP3"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Video Encoding / Copyright Avoidance Section -->
+                    <Border
+                        Margin="16,4"
+                        Padding="12"
+                        Background="{DynamicResource MaterialCardBackgroundBrush}"
+                        CornerRadius="4">
+                        <StackPanel Orientation="Vertical" Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <materialIcons:MaterialIcon
+                                    Width="20"
+                                    Height="20"
+                                    Kind="MovieEdit" />
+                                <TextBlock
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Text="Video Encoding Options" />
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                Text="Apply video transformations to modify the output. These can help avoid copyright detection or customize the video appearance."
+                                TextWrapping="Wrap" />
+                            
+                            <Grid Margin="0,8,0,0" ColumnDefinitions="*,*">
+                                <!-- Left Column -->
+                                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource MaterialBodyBrush}"
+                                        Text="Visual Transformations:" />
+                                    <!-- Horizontal Flip -->
+                                    <CheckBox
+                                        Content="Horizontal Flip (Mirror)"
+                                        IsChecked="{Binding HorizontalFlip}"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ToolTip.Tip="Flip video horizontally (left-right mirror)" />
+                                    <!-- Vertical Flip -->
+                                    <CheckBox
+                                        Content="Vertical Flip"
+                                        IsChecked="{Binding VerticalFlip}"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ToolTip.Tip="Flip video vertically (upside-down)" />
+                                    <!-- Scaling -->
+                                    <DockPanel>
+                                        <CheckBox
+                                            Content="Scale"
+                                            DockPanel.Dock="Left"
+                                            IsChecked="{Binding ApplyScaling}"
+                                            IsEnabled="{Binding IsNotProcessing}"
+                                            ToolTip.Tip="Resize video (0.8 = 80%, 1.1 = 110%)" />
+                                        <TextBlock
+                                            Margin="4,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding ScaleFactor, StringFormat='{}{0:F2}x'}" />
+                                        <Slider
+                                            Width="80"
+                                            IsEnabled="{Binding ApplyScaling}"
+                                            Maximum="1.1"
+                                            Minimum="0.8"
+                                            Value="{Binding ScaleFactor}" />
+                                    </DockPanel>
+                                    <!-- Rotation -->
+                                    <DockPanel>
+                                        <CheckBox
+                                            Content="Rotation"
+                                            DockPanel.Dock="Left"
+                                            IsChecked="{Binding ApplyRotation}"
+                                            IsEnabled="{Binding IsNotProcessing}"
+                                            ToolTip.Tip="Rotate video slightly (degrees)" />
+                                        <TextBlock
+                                            Margin="4,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding RotationDegrees, StringFormat='{}{0:F1}°'}" />
+                                        <Slider
+                                            Width="80"
+                                            IsEnabled="{Binding ApplyRotation}"
+                                            Maximum="5"
+                                            Minimum="-5"
+                                            Value="{Binding RotationDegrees}" />
+                                    </DockPanel>
+                                </StackPanel>
+                                
+                                <!-- Right Column -->
+                                <StackPanel Grid.Column="1" Margin="16,0,0,0" Orientation="Vertical" Spacing="4">
+                                    <TextBlock
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource MaterialBodyBrush}"
+                                        Text="Color &amp; Effects:" />
+                                    <!-- Brightness -->
+                                    <DockPanel>
+                                        <CheckBox
+                                            Content="Brightness"
+                                            DockPanel.Dock="Left"
+                                            IsChecked="{Binding ApplyBrightness}"
+                                            IsEnabled="{Binding IsNotProcessing}"
+                                            ToolTip.Tip="Adjust brightness (-0.2 to +0.2)" />
+                                        <TextBlock
+                                            Margin="4,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding BrightnessAdjust, StringFormat='{}{0:+0.00;-0.00}'}" />
+                                        <Slider
+                                            Width="60"
+                                            IsEnabled="{Binding ApplyBrightness}"
+                                            Maximum="0.2"
+                                            Minimum="-0.2"
+                                            Value="{Binding BrightnessAdjust}" />
+                                    </DockPanel>
+                                    <!-- Contrast -->
+                                    <DockPanel>
+                                        <CheckBox
+                                            Content="Contrast"
+                                            DockPanel.Dock="Left"
+                                            IsChecked="{Binding ApplyContrast}"
+                                            IsEnabled="{Binding IsNotProcessing}"
+                                            ToolTip.Tip="Adjust contrast (0.7 = low, 1.3 = high)" />
+                                        <TextBlock
+                                            Margin="4,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding ContrastAdjust, StringFormat='{}{0:F2}'}" />
+                                        <Slider
+                                            Width="60"
+                                            IsEnabled="{Binding ApplyContrast}"
+                                            Maximum="1.3"
+                                            Minimum="0.7"
+                                            Value="{Binding ContrastAdjust}" />
+                                    </DockPanel>
+                                    <!-- Blur -->
+                                    <DockPanel>
+                                        <CheckBox
+                                            Content="Blur"
+                                            DockPanel.Dock="Left"
+                                            IsChecked="{Binding ApplyBlur}"
+                                            IsEnabled="{Binding IsNotProcessing}"
+                                            ToolTip.Tip="Apply slight blur effect (0-2)" />
+                                        <TextBlock
+                                            Margin="4,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding BlurSigma, StringFormat='{}{0:F1}'}" />
+                                        <Slider
+                                            Width="60"
+                                            IsEnabled="{Binding ApplyBlur}"
+                                            Maximum="2"
+                                            Minimum="0"
+                                            Value="{Binding BlurSigma}" />
+                                    </DockPanel>
+                                </StackPanel>
+                            </Grid>
+                            
+                            <!-- Audio Options -->
+                            <TextBlock
+                                Margin="0,8,0,0"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                Text="Audio &amp; Speed:" />
+                            <WrapPanel Orientation="Horizontal">
+                                <!-- Pitch Shift -->
+                                <DockPanel Margin="0,0,16,0">
+                                    <CheckBox
+                                        Content="Pitch"
+                                        DockPanel.Dock="Left"
+                                        IsChecked="{Binding ApplyPitchShift}"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ToolTip.Tip="Shift audio pitch (0.8 = lower, 1.2 = higher)" />
+                                    <TextBlock
+                                        Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding PitchFactor, StringFormat='{}{0:F2}x'}" />
+                                    <Slider
+                                        Width="80"
+                                        IsEnabled="{Binding ApplyPitchShift}"
+                                        Maximum="1.2"
+                                        Minimum="0.8"
+                                        Value="{Binding PitchFactor}" />
+                                </DockPanel>
+                                <!-- Speed Change -->
+                                <DockPanel>
+                                    <CheckBox
+                                        Content="Speed"
+                                        DockPanel.Dock="Left"
+                                        IsChecked="{Binding ApplySpeedChange}"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ToolTip.Tip="Change playback speed (0.8 = slower, 1.2 = faster)" />
+                                    <TextBlock
+                                        Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding SpeedFactor, StringFormat='{}{0:F2}x'}" />
+                                    <Slider
+                                        Width="80"
+                                        IsEnabled="{Binding ApplySpeedChange}"
+                                        Maximum="1.2"
+                                        Minimum="0.8"
+                                        Value="{Binding SpeedFactor}" />
+                                </DockPanel>
+                            </WrapPanel>
+                            
+                            <Button
+                                Margin="0,8,0,0"
+                                HorizontalAlignment="Left"
+                                Command="{Binding ProcessCopyrightAvoidanceCommand}"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <materialIcons:MaterialIcon
+                                        Width="18"
+                                        Height="18"
+                                        Kind="MovieEdit" />
+                                    <TextBlock Text="Process Video" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Voice Merge Section -->
+                    <Border
+                        Margin="16,4"
+                        Padding="12"
+                        Background="{DynamicResource MaterialCardBackgroundBrush}"
+                        CornerRadius="4">
+                        <StackPanel Orientation="Vertical" Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <materialIcons:MaterialIcon
+                                    Width="20"
+                                    Height="20"
+                                    Kind="Microphone" />
+                                <TextBlock
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Text="Merge Voice / Audio" />
+                            </StackPanel>
+                            <TextBlock
+                                FontSize="12"
+                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                Text="Overlay voice or audio track onto the video. Useful for dubbing or adding narration."
+                                TextWrapping="Wrap" />
+                            
+                            <DockPanel Margin="0,4,0,0" LastChildFill="True">
+                                <Button
+                                    Margin="8,0,0,0"
+                                    DockPanel.Dock="Right"
+                                    Command="{Binding SelectVoiceFileCommand}"
+                                    Content="Browse"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <TextBox
+                                    IsReadOnly="True"
+                                    Text="{Binding VoiceFilePath}"
+                                    Watermark="Select a voice/audio file (MP3, WAV, AAC, OGG, M4A, FLAC)..." />
+                            </DockPanel>
+                            
+                            <Grid Margin="0,8,0,0" ColumnDefinitions="Auto,*,Auto,*">
+                                <CheckBox
+                                    Grid.Column="0"
+                                    Content="Mute original audio"
+                                    IsChecked="{Binding MuteOriginalAudio}"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    ToolTip.Tip="Completely mute the original video audio" />
+                                <DockPanel Grid.Column="1" Margin="16,0,0,0">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        DockPanel.Dock="Left"
+                                        Text="Voice:" />
+                                    <TextBlock
+                                        Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding VoiceVolume, StringFormat='{}{0:F1}'}" />
+                                    <Slider
+                                        Width="60"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        Maximum="2"
+                                        Minimum="0"
+                                        ToolTip.Tip="Voice track volume (1.0 = normal, 2.0 = 2x louder)"
+                                        Value="{Binding VoiceVolume}" />
+                                </DockPanel>
+                                <DockPanel Grid.Column="2" Margin="16,0,0,0">
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        DockPanel.Dock="Left"
+                                        Text="Original:" />
+                                    <TextBlock
+                                        Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding OriginalAudioVolume, StringFormat='{}{0:F1}'}" />
+                                    <Slider
+                                        Width="60"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        Maximum="2"
+                                        Minimum="0"
+                                        ToolTip.Tip="Original audio volume (1.0 = normal, 0.0 = muted)"
+                                        Value="{Binding OriginalAudioVolume}" />
+                                </DockPanel>
+                            </Grid>
+                            
+                            <StackPanel
+                                Margin="0,8,0,0"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Button
+                                    Command="{Binding MergeVoiceCommand}"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Theme="{DynamicResource MaterialOutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <materialIcons:MaterialIcon
+                                            Width="18"
+                                            Height="18"
+                                            Kind="MergeType" />
+                                        <TextBlock Text="Merge Voice" />
+                                    </StackPanel>
+                                </Button>
+                                <Button
+                                    Command="{Binding BatchMergeVoiceCommand}"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Theme="{DynamicResource MaterialOutlineButton}"
+                                    ToolTip.Tip="Select video folder, voice folder, and output folder to batch merge all matching files">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <materialIcons:MaterialIcon
+                                            Width="18"
+                                            Height="18"
+                                            Kind="FolderMultiple" />
+                                        <TextBlock Text="Batch Merge (Folders)" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Progress Section -->
+        <StackPanel Grid.Row="2" Margin="16,8">
+            <ProgressBar
+                Height="4"
+                IsIndeterminate="{Binding Progress.Current.Fraction, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=0}"
+                IsVisible="{Binding IsProcessing}"
+                Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
+            <TextBlock
+                Margin="0,4"
+                Text="{Binding StatusMessage}"
+                TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel
+            Grid.Row="3"
+            Margin="16"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Spacing="8">
+            <Button
+                Command="{Binding CancelCommand}"
+                Content="Cancel Processing"
+                IsVisible="{Binding IsProcessing}"
+                Theme="{DynamicResource MaterialOutlineButton}" />
+            <Button
+                Command="{Binding CloseDialogCommand}"
+                Content="CLOSE"
+                IsCancel="True"
+                IsDefault="True"
+                Theme="{DynamicResource MaterialOutlineButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
