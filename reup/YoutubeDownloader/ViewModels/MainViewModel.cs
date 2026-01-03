@@ -16,12 +16,21 @@ public partial class MainViewModel(
     DialogManager dialogManager,
     SnackbarManager snackbarManager,
     SettingsService settingsService,
-    UpdateService updateService
+    UpdateService updateService,
+    EncodeViewModel encodeViewModel,
+    UploadViewModel uploadViewModel,
+    ReupWorkflowViewModel reupViewModel
 ) : ViewModelBase
 {
     public string Title { get; } = $"{Program.Name} v{Program.VersionString}";
 
     public DashboardViewModel Dashboard { get; } = viewModelManager.CreateDashboardViewModel();
+
+    public EncodeViewModel EncodeViewModel { get; } = encodeViewModel;
+
+    public UploadViewModel UploadViewModel { get; } = uploadViewModel;
+
+    public ReupWorkflowViewModel ReupViewModel { get; } = reupViewModel;
 
     private async Task ShowDevelopmentBuildMessageAsync()
     {

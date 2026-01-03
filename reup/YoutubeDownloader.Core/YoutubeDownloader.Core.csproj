@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="CSharpier.MsBuild" Version="1.1.2" PrivateAssets="all" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3596" />
     <PackageReference Include="Gress" Version="2.1.1" />
     <PackageReference Include="JsonExtensions" Version="1.2.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />

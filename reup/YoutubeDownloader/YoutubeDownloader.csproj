@@ -48,6 +48,7 @@
     <PackageReference Include="Onova" Version="2.6.13" />
     <PackageReference Include="WebView.Avalonia" Version="11.0.0.1" />
     <PackageReference Include="WebView.Avalonia.Desktop" Version="11.0.0.1" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3596" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YoutubeDownloader.Core\YoutubeDownloader.Core.csproj" />
