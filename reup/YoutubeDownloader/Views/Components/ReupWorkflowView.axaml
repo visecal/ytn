@@ -1,0 +1,512 @@
+<UserControl
+    x:Class="YoutubeDownloader.Views.Components.ReupWorkflowView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:YoutubeDownloader.ViewModels.Components"
+    xmlns:converters="clr-namespace:YoutubeDownloader.Converters"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:DataType="components:ReupWorkflowViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Border
+            Grid.Row="0"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Vertical" Spacing="4">
+                <TextBlock FontSize="24" FontWeight="Light" Text="Reup Workflow" />
+                <TextBlock
+                    FontSize="13"
+                    Foreground="{DynamicResource MaterialBodyBrush}"
+                    Text="Complete workflow: Download videos from YouTube → Encode for copyright avoidance → Upload to your channel" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24" Orientation="Vertical" Spacing="16">
+
+                <!-- Workflow Steps Indicator -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialDarkBackgroundBrush}"
+                    CornerRadius="8">
+                    <Grid ColumnDefinitions="*,Auto,*,Auto,*">
+                        <!-- Step 1: Download -->
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center" Orientation="Vertical" Spacing="8">
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=1}"
+                                CornerRadius="24">
+                                <materialIcons:MaterialIcon
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Kind="Download" />
+                            </Border>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="13"
+                                FontWeight="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=1}"
+                                Foreground="{DynamicResource MaterialDarkForegroundBrush}"
+                                Text="1. Download" />
+                        </StackPanel>
+
+                        <!-- Arrow -->
+                        <materialIcons:MaterialIcon
+                            Grid.Column="1"
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource MaterialDividerBrush}"
+                            Kind="ArrowRight" />
+
+                        <!-- Step 2: Encode -->
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center" Orientation="Vertical" Spacing="8">
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=2}"
+                                CornerRadius="24">
+                                <materialIcons:MaterialIcon
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Kind="MovieEdit" />
+                            </Border>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="13"
+                                FontWeight="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=2}"
+                                Foreground="{DynamicResource MaterialDarkForegroundBrush}"
+                                Text="2. Encode" />
+                        </StackPanel>
+
+                        <!-- Arrow -->
+                        <materialIcons:MaterialIcon
+                            Grid.Column="3"
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource MaterialDividerBrush}"
+                            Kind="ArrowRight" />
+
+                        <!-- Step 3: Upload -->
+                        <StackPanel Grid.Column="4" HorizontalAlignment="Center" Orientation="Vertical" Spacing="8">
+                            <Border
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Center"
+                                Background="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=3}"
+                                CornerRadius="24">
+                                <materialIcons:MaterialIcon
+                                    Width="24"
+                                    Height="24"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Kind="Upload" />
+                            </Border>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="13"
+                                FontWeight="{Binding CurrentStep, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=3}"
+                                Foreground="{DynamicResource MaterialDarkForegroundBrush}"
+                                Text="3. Upload" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Step 1: Source Input -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border
+                                Width="28"
+                                Height="28"
+                                Background="{DynamicResource MaterialSecondaryMidBrush}"
+                                CornerRadius="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="1" />
+                            </Border>
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Source Videos" />
+                        </StackPanel>
+
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            Text="Enter YouTube URL (video, playlist, or channel) to download videos for reuploading."
+                            TextWrapping="Wrap" />
+
+                        <!-- URL Input -->
+                        <TextBox
+                            AcceptsReturn="True"
+                            IsEnabled="{Binding IsNotProcessing}"
+                            MaxLines="4"
+                            Text="{Binding SourceUrl}"
+                            Watermark="Enter YouTube URL (video, playlist, or channel)..." />
+
+                        <!-- Quick Options -->
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <RadioButton
+                                Content="Single Video"
+                                GroupName="SourceType"
+                                IsChecked="{Binding IsSingleVideo}"
+                                IsEnabled="{Binding IsNotProcessing}" />
+                            <RadioButton
+                                Content="Playlist"
+                                GroupName="SourceType"
+                                IsChecked="{Binding IsPlaylist}"
+                                IsEnabled="{Binding IsNotProcessing}" />
+                            <RadioButton
+                                Content="Channel (All Videos)"
+                                GroupName="SourceType"
+                                IsChecked="{Binding IsChannel}"
+                                IsEnabled="{Binding IsNotProcessing}" />
+                        </StackPanel>
+
+                        <!-- Download Options -->
+                        <Grid ColumnDefinitions="*,*,*">
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0" Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Quality" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    ItemsSource="{Binding QualityOptions}"
+                                    SelectedItem="{Binding SelectedQuality}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="4,0" Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Max Videos (for playlist/channel)" />
+                                <NumericUpDown
+                                    HorizontalAlignment="Stretch"
+                                    FormatString="0"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Maximum="1000"
+                                    Minimum="1"
+                                    Value="{Binding MaxVideos}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Margin="8,0,0,0" Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Download Folder" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBox
+                                        Grid.Column="0"
+                                        IsReadOnly="True"
+                                        Text="{Binding DownloadFolder}" />
+                                    <Button
+                                        Grid.Column="1"
+                                        Margin="4,0,0,0"
+                                        Command="{Binding SelectDownloadFolderCommand}"
+                                        Content="..."
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        Theme="{DynamicResource MaterialOutlineButton}" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Step 2: Encoding Options -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border
+                                Width="28"
+                                Height="28"
+                                Background="{DynamicResource MaterialSecondaryMidBrush}"
+                                CornerRadius="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="2" />
+                            </Border>
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Copyright Avoidance Encoding" />
+                            <CheckBox
+                                Margin="16,0,0,0"
+                                Content="Enable Encoding"
+                                IsChecked="{Binding EnableEncoding}"
+                                IsEnabled="{Binding IsNotProcessing}" />
+                        </StackPanel>
+
+                        <StackPanel IsEnabled="{Binding EnableEncoding}" Orientation="Vertical" Spacing="8">
+                            <!-- Preset Selection -->
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock VerticalAlignment="Center" FontSize="13" Text="Preset:" />
+                                <RadioButton
+                                    Content="Light"
+                                    GroupName="EncodePreset"
+                                    IsChecked="{Binding UseLightPreset}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <RadioButton
+                                    Content="Medium"
+                                    GroupName="EncodePreset"
+                                    IsChecked="{Binding UseMediumPreset}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <RadioButton
+                                    Content="Heavy"
+                                    GroupName="EncodePreset"
+                                    IsChecked="{Binding UseHeavyPreset}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                            </StackPanel>
+
+                            <!-- Quick Options -->
+                            <WrapPanel Orientation="Horizontal">
+                                <CheckBox
+                                    Margin="0,0,16,0"
+                                    Content="Horizontal Flip"
+                                    IsChecked="{Binding EncodeHorizontalFlip}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <CheckBox
+                                    Margin="0,0,16,0"
+                                    Content="Pitch Shift"
+                                    IsChecked="{Binding EncodePitchShift}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <CheckBox
+                                    Margin="0,0,16,0"
+                                    Content="Speed Change"
+                                    IsChecked="{Binding EncodeSpeedChange}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <CheckBox
+                                    Margin="0,0,16,0"
+                                    Content="Brightness"
+                                    IsChecked="{Binding EncodeBrightness}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Step 3: Upload Settings -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border
+                                Width="28"
+                                Height="28"
+                                Background="{DynamicResource MaterialSecondaryMidBrush}"
+                                CornerRadius="14">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="3" />
+                            </Border>
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Upload Settings" />
+                            <CheckBox
+                                Margin="16,0,0,0"
+                                Content="Enable Upload"
+                                IsChecked="{Binding EnableUpload}"
+                                IsEnabled="{Binding IsNotProcessing}" />
+                        </StackPanel>
+
+                        <StackPanel IsEnabled="{Binding EnableUpload}" Orientation="Vertical" Spacing="12">
+                            <!-- Service Account -->
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsReadOnly="True"
+                                    Text="{Binding ServiceAccountPath}"
+                                    Watermark="Select Service Account JSON..." />
+                                <Button
+                                    Grid.Column="1"
+                                    Margin="8,0,0,0"
+                                    Command="{Binding SelectServiceAccountCommand}"
+                                    Content="Browse"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Foreground="Green"
+                                    IsVisible="{Binding IsServiceAccountValid}"
+                                    Text="Connected" />
+                            </Grid>
+
+                            <!-- Title Template -->
+                            <StackPanel Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Title Template (use {original} for original title, {index} for number)" />
+                                <TextBox
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Text="{Binding TitleTemplate}"
+                                    Watermark="{original} - Reupload" />
+                            </StackPanel>
+
+                            <!-- Description Template -->
+                            <StackPanel Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Description Template" />
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    Height="80"
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Text="{Binding DescriptionTemplate}"
+                                    TextWrapping="Wrap"
+                                    Watermark="Enter description..." />
+                            </StackPanel>
+
+                            <!-- Tags -->
+                            <StackPanel Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Hashtags/Tags (comma-separated)" />
+                                <TextBox
+                                    IsEnabled="{Binding IsNotProcessing}"
+                                    Text="{Binding Tags}"
+                                    Watermark="#reup, #video, #youtube" />
+                            </StackPanel>
+
+                            <!-- Category and Privacy -->
+                            <Grid ColumnDefinitions="*,*,*">
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0" Orientation="Vertical" Spacing="4">
+                                    <TextBlock FontSize="13" Text="Category" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ItemsSource="{Binding Categories}"
+                                        SelectedItem="{Binding SelectedCategory}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="4,0" Orientation="Vertical" Spacing="4">
+                                    <TextBlock FontSize="13" Text="Privacy" />
+                                    <ComboBox
+                                        HorizontalAlignment="Stretch"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        ItemsSource="{Binding PrivacyOptions}"
+                                        SelectedItem="{Binding SelectedPrivacy}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="8,0,0,0" Orientation="Vertical" Spacing="4">
+                                    <TextBlock FontSize="13" Text="Upload Delay (seconds)" />
+                                    <NumericUpDown
+                                        HorizontalAlignment="Stretch"
+                                        FormatString="0"
+                                        IsEnabled="{Binding IsNotProcessing}"
+                                        Maximum="3600"
+                                        Minimum="0"
+                                        Value="{Binding UploadDelaySeconds}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Processing Log -->
+                <Border
+                    IsVisible="{Binding ProcessingLog.Count}"
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="Console" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Processing Log" />
+                        </StackPanel>
+
+                        <Border
+                            MaxHeight="200"
+                            Background="{DynamicResource MaterialDarkBackgroundBrush}"
+                            CornerRadius="4">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl Margin="12" ItemsSource="{Binding ProcessingLog}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                FontFamily="Consolas,Monaco,monospace"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource MaterialDarkForegroundBrush}"
+                                                Text="{Binding}"
+                                                TextWrapping="Wrap" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Action Bar -->
+        <Border
+            Grid.Row="2"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <!-- Progress Info -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Vertical" Spacing="4">
+                    <ProgressBar
+                        Height="6"
+                        IsIndeterminate="{Binding Progress.Current.Fraction, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=0}"
+                        IsVisible="{Binding IsProcessing}"
+                        Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource MaterialBodyBrush}"
+                        Text="{Binding StatusMessage}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Margin="16,0"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel"
+                    IsVisible="{Binding IsProcessing}"
+                    Theme="{DynamicResource MaterialOutlineButton}" />
+
+                <Button
+                    Grid.Column="2"
+                    Margin="8,0"
+                    Command="{Binding PreviewWorkflowCommand}"
+                    Content="Preview"
+                    IsEnabled="{Binding IsNotProcessing}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="Preview what will be downloaded/processed" />
+
+                <Button
+                    Grid.Column="3"
+                    Command="{Binding StartWorkflowCommand}"
+                    IsEnabled="{Binding IsNotProcessing}"
+                    Theme="{DynamicResource MaterialOutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialIcons:MaterialIcon
+                            Width="20"
+                            Height="20"
+                            Kind="Play" />
+                        <TextBlock Text="Start Reup Workflow" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

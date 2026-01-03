@@ -16,7 +16,7 @@
             Background="{DynamicResource MaterialDarkBackgroundBrush}"
             DockPanel.Dock="Top"
             Orientation="Vertical">
-            <Grid Margin="12,12,8,12" ColumnDefinitions="*,Auto,Auto,Auto">
+            <Grid Margin="12,12,8,12" ColumnDefinitions="*,Auto">
                 <!--  Query  -->
                 <materialStyles:Card Grid.Column="0">
                     <TextBox
@@ -27,8 +27,8 @@
                         ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                         Text="{Binding Query}"
                         Theme="{DynamicResource SoloTextBox}"
-                        ToolTip.Tip="Any valid YouTube URL or ID is accepted. Prepend a question mark (?) to perform search by text."
-                        Watermark="URL or search query">
+                        ToolTip.Tip="Enter YouTube URL (video, playlist, or channel) or search query (?keyword)"
+                        Watermark="YouTube URL, playlist, channel, or search query (?)">
                         <TextBox.InnerLeftContent>
                             <materialIcons:MaterialIcon
                                 Width="24"
@@ -44,64 +44,30 @@
                                 Command="{Binding ProcessQueryCommand}"
                                 IsDefault="True"
                                 Theme="{DynamicResource MaterialFlatButton}"
-                                ToolTip.Tip="Process query (Enter)">
+                                ToolTip.Tip="Download (Enter)">
                                 <materialIcons:MaterialIcon
                                     Width="24"
                                     Height="24"
-                                    Kind="ArrowRight" />
+                                    Kind="Download" />
                             </Button>
                         </TextBox.InnerRightContent>
                     </TextBox>
                 </materialStyles:Card>
 
-                <!--  Auth button  -->
-                <Button
-                    Grid.Column="1"
-                    Margin="8,0,0,0"
-                    Padding="8"
-                    VerticalAlignment="Center"
-                    Command="{Binding ShowAuthSetupCommand}"
-                    Foreground="{DynamicResource MaterialDarkForegroundBrush}"
-                    IsVisible="{OnPlatform False,
-                                           Windows=True}"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="Authentication">
-                    <materialIcons:MaterialIcon
-                        Width="24"
-                        Height="24"
-                        Kind="AccountKey" />
-                </Button>
-
                 <!--  Video Processing button  -->
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="1"
                     Margin="8,0,0,0"
                     Padding="8"
                     VerticalAlignment="Center"
                     Command="{Binding ShowVideoProcessingCommand}"
                     Foreground="{DynamicResource MaterialDarkForegroundBrush}"
                     Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="Video Processing (Copyright Avoidance, Audio Extract, Voice Merge)">
+                    ToolTip.Tip="Quick Video Processing">
                     <materialIcons:MaterialIcon
                         Width="24"
                         Height="24"
                         Kind="MovieEdit" />
-                </Button>
-
-                <!--  Settings button  -->
-                <Button
-                    Grid.Column="3"
-                    Margin="8,0,0,0"
-                    Padding="8"
-                    VerticalAlignment="Center"
-                    Command="{Binding ShowSettingsCommand}"
-                    Foreground="{DynamicResource MaterialDarkForegroundBrush}"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="Settings">
-                    <materialIcons:MaterialIcon
-                        Width="24"
-                        Height="24"
-                        Kind="Settings" />
                 </Button>
             </Grid>
 
@@ -135,15 +101,16 @@
                     LineSpacing="8"
                     TextAlignment="Center"
                     TextWrapping="Wrap">
-                    <Run Text="Copy-paste a" />
-                    <Run FontWeight="SemiBold" Text="URL" />
-                    <Run Text="or enter a" />
-                    <Run FontWeight="SemiBold" Text="search query" />
-                    <Run Text="to start downloading" />
+                    <Run Text="Enter a YouTube" />
+                    <Run FontWeight="SemiBold" Text="video, playlist, or channel URL" />
+                    <LineBreak />
+                    <Run Text="Use" />
+                    <Run FontWeight="SemiBold" Text="?keyword" />
+                    <Run Text="to search YouTube" />
                     <LineBreak />
                     <Run Text="Press" />
                     <Run FontWeight="SemiBold" Text="Shift+Enter" />
-                    <Run Text="to add multiple items" />
+                    <Run Text="to add multiple URLs" />
                 </TextBlock>
             </StackPanel>
 

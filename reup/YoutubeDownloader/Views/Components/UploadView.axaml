@@ -1,0 +1,350 @@
+<UserControl
+    x:Class="YoutubeDownloader.Views.Components.UploadView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:YoutubeDownloader.ViewModels.Components"
+    xmlns:converters="clr-namespace:YoutubeDownloader.Converters"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:DataType="components:UploadViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Border
+            Grid.Row="0"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+                    <TextBlock FontSize="24" FontWeight="Light" Text="YouTube Upload" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource MaterialBodyBrush}"
+                        Text="Upload videos to YouTube using Service Account authentication" />
+                </StackPanel>
+
+                <!-- Connection Status -->
+                <Border
+                    Grid.Column="1"
+                    Padding="12,6"
+                    CornerRadius="16">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding IsConnected, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=True}" />
+                    </Border.Background>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialIcons:MaterialIcon
+                            Width="18"
+                            Height="18"
+                            Kind="{Binding IsConnected, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=True}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="13"
+                            Text="{Binding ConnectionStatus}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24" Orientation="Vertical" Spacing="16">
+                <!-- Service Account Setup -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="Key" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Service Account Authentication" />
+                        </StackPanel>
+
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            Text="Upload the Service Account JSON file from Google Cloud Console. The SA must have YouTube API access and be added as a manager to your YouTube channel."
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <TextBox
+                                Grid.Column="0"
+                                IsReadOnly="True"
+                                Text="{Binding ServiceAccountPath}"
+                                Watermark="Select Service Account JSON file..." />
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectServiceAccountCommand}"
+                                Content="Browse"
+                                IsEnabled="{Binding IsNotUploading}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Margin="8,0,0,0"
+                                Command="{Binding TestConnectionCommand}"
+                                Content="Test Connection"
+                                IsEnabled="{Binding IsNotUploading}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                        </Grid>
+
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            IsVisible="{Binding ChannelName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            Text="{Binding ChannelName, StringFormat='Connected to: {0}'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Video Selection -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="VideoPlus" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Video to Upload" />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <TextBox
+                                Grid.Column="0"
+                                IsReadOnly="True"
+                                Text="{Binding VideoFilePath}"
+                                Watermark="Select a video file to upload..." />
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectVideoCommand}"
+                                Content="Browse"
+                                IsEnabled="{Binding IsNotUploading}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectVideoFolderCommand}"
+                                Content="Folder (Batch)"
+                                IsEnabled="{Binding IsNotUploading}"
+                                Theme="{DynamicResource MaterialOutlineButton}"
+                                ToolTip.Tip="Select folder for batch upload" />
+                        </Grid>
+
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            IsVisible="{Binding IsBatchMode}"
+                            Text="{Binding BatchFileCount, StringFormat='Batch mode: {0} video file(s) will be uploaded'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Video Metadata -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="TextBox" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Video Metadata" />
+                        </StackPanel>
+
+                        <!-- Title -->
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <TextBlock FontSize="13" Text="Title (use {filename} for video filename)" />
+                            <TextBox
+                                IsEnabled="{Binding IsNotUploading}"
+                                Text="{Binding VideoTitle}"
+                                Watermark="Enter video title..." />
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <TextBlock FontSize="13" Text="Description" />
+                            <TextBox
+                                AcceptsReturn="True"
+                                Height="120"
+                                IsEnabled="{Binding IsNotUploading}"
+                                Text="{Binding VideoDescription}"
+                                TextWrapping="Wrap"
+                                Watermark="Enter video description..." />
+                        </StackPanel>
+
+                        <!-- Tags/Hashtags -->
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <TextBlock FontSize="13" Text="Tags (comma-separated, will be added as hashtags)" />
+                            <TextBox
+                                IsEnabled="{Binding IsNotUploading}"
+                                Text="{Binding VideoTags}"
+                                Watermark="tag1, tag2, tag3..." />
+                        </StackPanel>
+
+                        <!-- Category and Privacy -->
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,0" Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Category" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    IsEnabled="{Binding IsNotUploading}"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding SelectedCategory}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,0" Orientation="Vertical" Spacing="4">
+                                <TextBlock FontSize="13" Text="Privacy" />
+                                <ComboBox
+                                    HorizontalAlignment="Stretch"
+                                    IsEnabled="{Binding IsNotUploading}"
+                                    ItemsSource="{Binding PrivacyOptions}"
+                                    SelectedItem="{Binding SelectedPrivacy}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,12,0,0" Orientation="Horizontal" Spacing="24">
+                                <CheckBox
+                                    Content="Notify Subscribers"
+                                    IsChecked="{Binding NotifySubscribers}"
+                                    IsEnabled="{Binding IsNotUploading}" />
+                                <CheckBox
+                                    Content="Made for Kids"
+                                    IsChecked="{Binding MadeForKids}"
+                                    IsEnabled="{Binding IsNotUploading}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Thumbnail -->
+                        <StackPanel Orientation="Vertical" Spacing="4">
+                            <TextBlock FontSize="13" Text="Custom Thumbnail (optional)" />
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <TextBox
+                                    Grid.Column="0"
+                                    IsReadOnly="True"
+                                    Text="{Binding ThumbnailPath}"
+                                    Watermark="Select thumbnail image..." />
+                                <Button
+                                    Grid.Column="1"
+                                    Margin="8,0,0,0"
+                                    Command="{Binding SelectThumbnailCommand}"
+                                    Content="Browse"
+                                    IsEnabled="{Binding IsNotUploading}"
+                                    Theme="{DynamicResource MaterialOutlineButton}" />
+                                <Button
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    Command="{Binding ClearThumbnailCommand}"
+                                    Content="Clear"
+                                    IsEnabled="{Binding IsNotUploading}"
+                                    IsVisible="{Binding ThumbnailPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                    Theme="{DynamicResource MaterialFlatButton}" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Upload Queue -->
+                <Border
+                    IsVisible="{Binding UploadQueue.Count}"
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="PlaylistCheck" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Upload Results" />
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{Binding UploadQueue}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0,4"
+                                        Padding="12"
+                                        Background="{DynamicResource MaterialDarkBackgroundBrush}"
+                                        CornerRadius="4">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="4">
+                                                <TextBlock FontWeight="SemiBold" Text="{Binding FileName}" />
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource MaterialBodyBrush}"
+                                                    Text="{Binding Status}" />
+                                            </StackPanel>
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource MaterialBodyBrush}"
+                                                IsVisible="{Binding VideoUrl, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Text="{Binding VideoUrl}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Action Bar -->
+        <Border
+            Grid.Row="2"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <!-- Progress Info -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Vertical" Spacing="4">
+                    <ProgressBar
+                        Height="6"
+                        IsIndeterminate="{Binding Progress.Current.Fraction, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=0}"
+                        IsVisible="{Binding IsUploading}"
+                        Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource MaterialBodyBrush}"
+                        Text="{Binding StatusMessage}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Margin="16,0"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel"
+                    IsVisible="{Binding IsUploading}"
+                    Theme="{DynamicResource MaterialOutlineButton}" />
+
+                <Button
+                    Grid.Column="2"
+                    Command="{Binding StartUploadCommand}"
+                    IsEnabled="{Binding CanUpload}"
+                    Theme="{DynamicResource MaterialOutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialIcons:MaterialIcon
+                            Width="20"
+                            Height="20"
+                            Kind="Upload" />
+                        <TextBlock Text="Start Upload" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

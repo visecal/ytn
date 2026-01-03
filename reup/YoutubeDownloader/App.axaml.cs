@@ -50,6 +50,9 @@ public class App : Application, IDisposable
         services.AddTransient<MessageBoxViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<VideoProcessingViewModel>();
+        services.AddTransient<EncodeViewModel>();
+        services.AddTransient<UploadViewModel>();
+        services.AddTransient<ReupWorkflowViewModel>();
 
         _services = services.BuildServiceProvider(true);
         _settingsService = _services.GetRequiredService<SettingsService>();

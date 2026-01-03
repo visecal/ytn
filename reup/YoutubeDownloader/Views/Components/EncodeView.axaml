@@ -1,0 +1,376 @@
+<UserControl
+    x:Class="YoutubeDownloader.Views.Components.EncodeView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:YoutubeDownloader.ViewModels.Components"
+    xmlns:converters="clr-namespace:YoutubeDownloader.Converters"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    x:DataType="components:EncodeViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Border
+            Grid.Row="0"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Vertical" Spacing="4">
+                <TextBlock FontSize="24" FontWeight="Light" Text="Video Encoding" />
+                <TextBlock
+                    FontSize="13"
+                    Foreground="{DynamicResource MaterialBodyBrush}"
+                    Text="Apply transformations to videos for copyright avoidance when reuploading" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24" Orientation="Vertical" Spacing="16">
+                <!-- Input Section -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="VideoInput" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Input Video" />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <TextBox
+                                Grid.Column="0"
+                                IsReadOnly="True"
+                                Text="{Binding InputVideoPath}"
+                                Watermark="Select a video file to encode..." />
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectInputVideoCommand}"
+                                Content="Browse"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                            <Button
+                                Grid.Column="2"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectInputFolderCommand}"
+                                Content="Folder (Batch)"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}"
+                                ToolTip.Tip="Select a folder for batch processing" />
+                        </Grid>
+
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            IsVisible="{Binding IsBatchMode}"
+                            Text="{Binding BatchFileCount, StringFormat='Batch mode: {0} video file(s) found'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Copyright Avoidance Options -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="ShieldCheck" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Copyright Avoidance Options" />
+                        </StackPanel>
+
+                        <TextBlock
+                            FontSize="13"
+                            Foreground="{DynamicResource MaterialBodyBrush}"
+                            Text="These transformations help modify the video fingerprint to avoid automatic copyright detection."
+                            TextWrapping="Wrap" />
+
+                        <!-- Preset Buttons -->
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button
+                                Command="{Binding ApplyLightPresetCommand}"
+                                Content="Light Preset"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}"
+                                ToolTip.Tip="Minimal changes: slight scale, pitch shift" />
+                            <Button
+                                Command="{Binding ApplyMediumPresetCommand}"
+                                Content="Medium Preset"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}"
+                                ToolTip.Tip="Moderate changes: flip, scale, brightness, pitch" />
+                            <Button
+                                Command="{Binding ApplyHeavyPresetCommand}"
+                                Content="Heavy Preset"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}"
+                                ToolTip.Tip="Maximum changes: all transformations" />
+                            <Button
+                                Command="{Binding ResetOptionsCommand}"
+                                Content="Reset All"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialFlatButton}" />
+                        </StackPanel>
+
+                        <!-- Options Grid -->
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                            <!-- Left Column: Visual -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,16,0" Orientation="Vertical" Spacing="8">
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MaterialBodyBrush}" Text="Visual Transformations" />
+
+                                <CheckBox
+                                    Content="Horizontal Flip (Mirror)"
+                                    IsChecked="{Binding HorizontalFlip}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+                                <CheckBox
+                                    Content="Vertical Flip"
+                                    IsChecked="{Binding VerticalFlip}"
+                                    IsEnabled="{Binding IsNotProcessing}" />
+
+                                <Grid ColumnDefinitions="Auto,Auto,*">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="Scale"
+                                        IsChecked="{Binding ApplyScaling}"
+                                        IsEnabled="{Binding IsNotProcessing}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding ScaleFactor, StringFormat='{}{0:F2}x'}" />
+                                    <Slider
+                                        Grid.Column="2"
+                                        IsEnabled="{Binding ApplyScaling}"
+                                        Maximum="1.1"
+                                        Minimum="0.8"
+                                        Value="{Binding ScaleFactor}" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,Auto,*">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="Rotation"
+                                        IsChecked="{Binding ApplyRotation}"
+                                        IsEnabled="{Binding IsNotProcessing}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding RotationDegrees, StringFormat='{}{0:F1}°'}" />
+                                    <Slider
+                                        Grid.Column="2"
+                                        IsEnabled="{Binding ApplyRotation}"
+                                        Maximum="5"
+                                        Minimum="-5"
+                                        Value="{Binding RotationDegrees}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Right Column: Color & Effects -->
+                            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Spacing="8">
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MaterialBodyBrush}" Text="Color &amp; Effects" />
+
+                                <Grid ColumnDefinitions="Auto,Auto,*">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="Brightness"
+                                        IsChecked="{Binding ApplyBrightness}"
+                                        IsEnabled="{Binding IsNotProcessing}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding BrightnessAdjust, StringFormat='{}{0:+0.00;-0.00}'}" />
+                                    <Slider
+                                        Grid.Column="2"
+                                        IsEnabled="{Binding ApplyBrightness}"
+                                        Maximum="0.2"
+                                        Minimum="-0.2"
+                                        Value="{Binding BrightnessAdjust}" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,Auto,*">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="Contrast"
+                                        IsChecked="{Binding ApplyContrast}"
+                                        IsEnabled="{Binding IsNotProcessing}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding ContrastAdjust, StringFormat='{}{0:F2}'}" />
+                                    <Slider
+                                        Grid.Column="2"
+                                        IsEnabled="{Binding ApplyContrast}"
+                                        Maximum="1.3"
+                                        Minimum="0.7"
+                                        Value="{Binding ContrastAdjust}" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,Auto,*">
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="Blur"
+                                        IsChecked="{Binding ApplyBlur}"
+                                        IsEnabled="{Binding IsNotProcessing}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding BlurSigma, StringFormat='{}{0:F1}'}" />
+                                    <Slider
+                                        Grid.Column="2"
+                                        IsEnabled="{Binding ApplyBlur}"
+                                        Maximum="2"
+                                        Minimum="0"
+                                        Value="{Binding BlurSigma}" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Audio Row -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,16,0,0" Orientation="Vertical" Spacing="8">
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MaterialBodyBrush}" Text="Audio &amp; Speed" />
+                                <WrapPanel Orientation="Horizontal">
+                                    <Grid Margin="0,0,24,0" ColumnDefinitions="Auto,Auto,100">
+                                        <CheckBox
+                                            Grid.Column="0"
+                                            Content="Pitch Shift"
+                                            IsChecked="{Binding ApplyPitchShift}"
+                                            IsEnabled="{Binding IsNotProcessing}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="8,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding PitchFactor, StringFormat='{}{0:F2}x'}" />
+                                        <Slider
+                                            Grid.Column="2"
+                                            IsEnabled="{Binding ApplyPitchShift}"
+                                            Maximum="1.2"
+                                            Minimum="0.8"
+                                            Value="{Binding PitchFactor}" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="Auto,Auto,100">
+                                        <CheckBox
+                                            Grid.Column="0"
+                                            Content="Speed"
+                                            IsChecked="{Binding ApplySpeedChange}"
+                                            IsEnabled="{Binding IsNotProcessing}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="8,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding SpeedFactor, StringFormat='{}{0:F2}x'}" />
+                                        <Slider
+                                            Grid.Column="2"
+                                            IsEnabled="{Binding ApplySpeedChange}"
+                                            Maximum="1.2"
+                                            Minimum="0.8"
+                                            Value="{Binding SpeedFactor}" />
+                                    </Grid>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Output Section -->
+                <Border
+                    Padding="20"
+                    Background="{DynamicResource MaterialCardBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Orientation="Vertical" Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <materialIcons:MaterialIcon
+                                Width="24"
+                                Height="24"
+                                Foreground="{DynamicResource MaterialSecondaryMidBrush}"
+                                Kind="FolderVideo" />
+                            <TextBlock FontSize="16" FontWeight="SemiBold" Text="Output" />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox
+                                Grid.Column="0"
+                                IsReadOnly="True"
+                                Text="{Binding OutputPath}"
+                                Watermark="Select output folder..." />
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Command="{Binding SelectOutputFolderCommand}"
+                                Content="Browse"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Theme="{DynamicResource MaterialOutlineButton}" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <TextBlock VerticalAlignment="Center" Text="Output suffix:" />
+                            <TextBox
+                                Width="150"
+                                IsEnabled="{Binding IsNotProcessing}"
+                                Text="{Binding OutputSuffix}"
+                                Watermark="_encoded" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Action Bar -->
+        <Border
+            Grid.Row="2"
+            Padding="24,16"
+            Background="{DynamicResource MaterialCardBackgroundBrush}"
+            BorderBrush="{DynamicResource MaterialDividerBrush}"
+            BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <!-- Progress Info -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Vertical" Spacing="4">
+                    <ProgressBar
+                        Height="6"
+                        IsIndeterminate="{Binding Progress.Current.Fraction, Converter={x:Static converters:EqualityConverter.Equality}, ConverterParameter=0}"
+                        IsVisible="{Binding IsProcessing}"
+                        Value="{Binding Progress.Current.Fraction, Mode=OneWay}" />
+                    <TextBlock
+                        FontSize="13"
+                        Foreground="{DynamicResource MaterialBodyBrush}"
+                        Text="{Binding StatusMessage}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Margin="16,0"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel"
+                    IsVisible="{Binding IsProcessing}"
+                    Theme="{DynamicResource MaterialOutlineButton}" />
+
+                <Button
+                    Grid.Column="2"
+                    Command="{Binding StartEncodingCommand}"
+                    IsEnabled="{Binding IsNotProcessing}"
+                    Theme="{DynamicResource MaterialOutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <materialIcons:MaterialIcon
+                            Width="20"
+                            Height="20"
+                            Kind="Play" />
+                        <TextBlock Text="Start Encoding" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

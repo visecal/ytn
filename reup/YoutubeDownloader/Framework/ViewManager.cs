@@ -21,6 +21,9 @@ public partial class ViewManager
             DownloadSingleSetupViewModel => new DownloadSingleSetupView(),
             MessageBoxViewModel => new MessageBoxView(),
             SettingsViewModel => new SettingsView(),
+            EncodeViewModel => new EncodeView(),
+            UploadViewModel => new UploadView(),
+            ReupWorkflowViewModel => new ReupWorkflowView(),
             _ => null,
         };
 
